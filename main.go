@@ -9,7 +9,7 @@ import (
 type todo struct{
 	Id int `json:"id"`
 	Title string 	`json:"title"`
-	Completed bool 	`json:completed`
+	Completed bool 	`json:"completed"`
 }
 
 var todos= []todo{
@@ -21,10 +21,18 @@ var todos= []todo{
 func getTodos(context *gin.Context){
 	context.IndentedJSON(http.StatusOK,todos)
 }
-
+func postTodos(context *gin.Context){
+	var newTodo todo
+	if err := context.BindJSON(&newTodo); err!=nil{
+		return
+	}
+	todos=append(todos, newTodo)
+	context.IndentedJSON(http.StatusCreated, newTodo)
+}
 
 func main(){
 	router:= gin.Default()
 	router.GET("/todos",getTodos)
-		router.Run("localhost:5001")
+	router.POST("/todos",postTodos)
+	router.Run("localhost:5001")
 }
