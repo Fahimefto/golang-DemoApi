@@ -51,11 +51,22 @@ func getTodoById(id string)(*todo,error){
 	return nil,errors.New("not found")
 
 }
+func updateById(context *gin.Context){
+	id := context.Param("id")
+	todo,err:= getTodoById(id)
 
+	if err !=nil {
+		context.IndentedJSON(http.StatusNotFound, gin.H{"message":"not found"})
+		return
+	}
+	todo.Completed=!todo.Completed
+	context.IndentedJSON(http.StatusOK, todo) 
+}
 func main(){
 	router:= gin.Default()
 	router.GET("/todos",getTodos)
 	router.GET("/todos/:id",getTodo)
 	router.POST("/todos",postTodos)
+	router.PATCH("/todos/:id",updateById)
 	router.Run("localhost:5001")
 }
